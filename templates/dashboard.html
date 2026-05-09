@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Stroke Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=11">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <div class="overlay-blur"></div>
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-activity">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
+                    <span>Health Monitor</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-page="dashboard">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-home">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-page="profile">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-user">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span>Profile</span>
+                </a>
+                <a href="#" class="nav-item" data-page="predict">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-cpu">
+                        <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                        <rect x="9" y="9" width="6" height="6"></rect>
+                        <line x1="9" y1="1" x2="9" y2="4"></line>
+                        <line x1="15" y1="1" x2="15" y2="4"></line>
+                        <line x1="9" y1="20" x2="9" y2="23"></line>
+                        <line x1="15" y1="20" x2="15" y2="23"></line>
+                        <line x1="20" y1="9" x2="23" y2="9"></line>
+                        <line x1="20" y1="14" x2="23" y2="14"></line>
+                        <line x1="1" y1="9" x2="4" y2="9"></line>
+                        <line x1="1" y1="14" x2="4" y2="14"></line>
+                    </svg>
+                    <span>Predict</span>
+                </a>
+
+            </nav>
+            <div class="sidebar-footer">
+                <a href="/" class="logout-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-log-out">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+        <main class="main-content">
+            <div class="content-wrapper">
+                <header class="main-header">
+                    <h1 class="dashboard-title">Dashboard</h1>
+                    <div class="user-info">
+                        <span>Welcome, <span id="usernameDisplay">User</span></span>
+                    </div>
+                </header>
+
+                <!-- Dashboard Page -->
+                <div id="dashboard-page" class="page active">
+                    <!-- Row 1: Large Chart Cards -->
+                    <div class="card-grid">
+                        <div id="hr-card" class="card large-card card-animate">
+                            <div class="card-header">
+                                <div class="card-title-group">
+                                    <h3 class="card-title">Heart Rate</h3>
+                                    <p class="card-subtitle">Live from ESP32 + MAX30102</p>
+                                </div>
+                                <div class="card-icon hr-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                        fill="currentColor" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path
+                                            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                        </path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="value-row">
+                                    <p class="current-value"><span id="hr-value">0</span> bpm</p>
+                                    <p id="hr-alert" class="live-indicator">Stable</p>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="hrChart"></canvas>
+                            </div>
+                        </div>
+                        <div id="spo2-card" class="card large-card card-animate">
+                            <div class="card-header">
+                                <div class="card-title-group">
+                                    <h3 class="card-title">Blood Oxygen (SpO₂)</h3>
+                                    <p class="card-subtitle">Live from ESP32 + MAX30102</p>
+                                </div>
+                                <div class="card-icon spo2-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                        fill="currentColor" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0L12 2.69z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="value-row">
+                                    <p class="current-value"><span id="spo2-value">0</span> %</p>
+                                    <p id="spo2-alert" class="live-indicator">Stable</p>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="spo2Chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+
+                    <!-- Prediction History Section -->
+                    <div class="card history-card" style="margin-top: 32px;">
+                        <div class="card-header-simple">
+                            <h3 class="card-title">Prediction History</h3>
+                            <p class="card-subtitle-text">Recent AI stroke risk assessments</p>
+                        </div>
+                        <div class="history-table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Heart Rate</th>
+                                        <th>SpO₂</th>
+                                        <th>Result</th>
+                                        <th>Probability</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="history-tbody">
+                                    <!-- History rows will be added here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sensor Status Badge -->
+                <div class="sensor-status-badge card-animate">
+                    <p>Sensor: <span id="sensor-connection-status">Disconnected ●</span></p>
+                </div>
+
+                <div id="profile-page" class="page">
+                    <h2 class="dashboard-title">Your Profile</h2>
+                    <p class="page-subtitle">View your account and health information</p>
+
+                    <div class="profile-top-grid">
+                        <!-- User Card -->
+                        <div class="card profile-card user-card">
+                            <div class="avatar-circle" id="profile-avatar">U</div>
+                            <h3 id="profile-fullname">Loading...</h3>
+                            <p class="profile-username" id="profile-username">@username</p>
+
+                            <div class="profile-divider"></div>
+
+                            <div class="profile-detail-row">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path
+                                        d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                    </path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                                <span id="profile-email">loading...</span>
+                            </div>
+                            <div class="profile-detail-row">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <span id="profile-gender-age">Loading...</span>
+                            </div>
+                        </div>
+
+                        <!-- Personal Info Card -->
+                        <div class="card profile-card info-card">
+                            <div class="card-header-simple"
+                                style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h3>Personal Information</h3>
+                                    <p class="card-subtitle-text">Your demographic and lifestyle details</p>
+                                </div>
+                                <button id="edit-profile-btn" class="btn-icon-text">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                    </svg>
+                                    Edit Profile
+                                </button>
+                            </div>
+
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <div class="info-icon purple">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="info-content">
+                                        <span class="label">Work Type</span>
+                                        <span class="value" id="profile-work">Loading...</span>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-icon blue">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                        </svg>
+                                    </div>
+                                    <div class="info-content">
+                                        <span class="label">Residence</span>
+                                        <span class="value" id="profile-residence">Loading...</span>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-icon pink">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path
+                                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <div class="info-content">
+                                        <span class="label">Marital Status</span>
+                                        <span class="value" id="profile-marital">Loading...</span>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-icon indigo">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="info-content">
+                                        <span class="label">Smoking Status</span>
+                                        <span class="value" id="profile-smoking">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Health Metrics -->
+                    <div class="card profile-card health-metrics-card">
+                        <div class="card-header-simple">
+                            <h3>Health Metrics</h3>
+                            <p class="card-subtitle-text">Your key health indicators for stroke risk assessment</p>
+                        </div>
+
+                        <div class="health-grid">
+                            <div class="health-box blue-box">
+                                <span class="label">Body Mass Index</span>
+                                <span class="value" id="profile-bmi">0 kg/m²</span>
+                                <span class="status" id="status-bmi">Normal</span>
+                            </div>
+                            <div class="health-box purple-box">
+                                <span class="label">Glucose Level</span>
+                                <span class="value" id="profile-glucose">0 mg/dL</span>
+                                <span class="status" id="status-glucose">Normal</span>
+                            </div>
+                            <div class="health-box red-box">
+                                <span class="label">Hypertension</span>
+                                <span class="value" id="profile-hypertension">No</span>
+                                <span class="status" id="status-hypertension">Normal</span>
+                            </div>
+                            <div class="health-box orange-box">
+                                <span class="label">Heart Disease</span>
+                                <span class="value" id="profile-heart-disease">No</span>
+                                <span class="status" id="status-heart-disease">Healthy</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Real-time Monitoring Banner -->
+                    <div class="real-time-banner">
+                        <div class="banner-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                            </svg>
+                        </div>
+                        <div class="banner-content">
+                            <h4>Real-time Monitoring</h4>
+                            <p>Your Heart Rate and SpO₂ are being monitored in real-time through ESP32 + MAX30102
+                                sensors and transmitted via MQTT protocol. These values are displayed on your dashboard
+                                and used for AI predictions.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manual Prediction Page -->
+                <div id="predict-page" class="page">
+                    <h2 class="dashboard-title">AI Stroke Risk Prediction</h2>
+                    <p class="page-subtitle">Run machine learning analysis using your health profile and live sensor
+                        data</p>
+
+                    <div class="predict-grid">
+                        <!-- Left Column: Input Form -->
+                        <div class="card predict-input-card">
+                            <div class="card-header-simple">
+                                <h3>Prediction Input Data</h3>
+                                <p class="card-subtitle-text">All parameters used by the ML model for stroke risk
+                                    assessment</p>
+                            </div>
+
+                            <form id="manual-predict-form">
+                                <!-- Vital Signs Section -->
+                                <div class="form-section-title" style="margin-top: 0;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="feather feather-activity">
+                                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                                    </svg>
+                                    Real-Time IoT Sensor Data
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group sensor-input-group red-theme">
+                                        <div class="input-header">
+                                            <label for="predict-hr">Heart Rate</label>
+                                            <div class="status-dot"></div>
+                                        </div>
+                                        <div class="input-wrapper">
+                                            <input type="number" id="predict-hr" name="heart_rate" required min="30"
+                                                max="220" value="72">
+                                            <span class="unit">bpm</span>
+                                        </div>
+                                        <p class="input-hint">Live from ESP32</p>
+                                    </div>
+                                    <div class="form-group sensor-input-group blue-theme">
+                                        <div class="input-header">
+                                            <label for="predict-spo2">Blood Oxygen (SpO₂)</label>
+                                            <div class="status-dot"></div>
+                                        </div>
+                                        <div class="input-wrapper">
+                                            <input type="number" id="predict-spo2" name="spo2" required min="50"
+                                                max="100" value="98">
+                                            <span class="unit">%</span>
+                                        </div>
+                                        <p class="input-hint">Live from MAX30102</p>
+                                    </div>
+                                </div>
+
+                                <!-- Health Profile Section -->
+                                <div class="form-section-title">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="feather feather-user">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                    Health Profile Data
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="predict-age">Age</label>
+                                        <div class="input-wrapper">
+                                            <input type="number" id="predict-age" name="age" required>
+                                            <span class="unit">years</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="predict-gender">Gender</label>
+                                        <select id="predict-gender" name="gender" required>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="predict-bmi">BMI</label>
+                                        <div class="input-wrapper">
+                                            <input type="number" id="predict-bmi" name="bmi" step="0.1" required>
+                                            <span class="unit">kg/m²</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="predict-glucose">Glucose</label>
+                                        <div class="input-wrapper">
+                                            <input type="number" id="predict-glucose" name="avg_glucose_level"
+                                                step="0.1" required>
+                                            <span class="unit">mg/dL</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="predict-hypertension">Hypertension</label>
+                                        <select id="predict-hypertension" name="hypertension" required>
+                                            <option value="0">No</option>
+                                            <option value="1">Yes</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="predict-heart-disease">Heart Disease</label>
+                                        <select id="predict-heart-disease" name="heart_disease" required>
+                                            <option value="0">No</option>
+                                            <option value="1">Yes</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="predict-work">Work Type</label>
+                                        <select id="predict-work" name="work_type" required>
+                                            <option value="Private">Private</option>
+                                            <option value="Self-employed">Self-employed</option>
+                                            <option value="Govt_job">Govt_job</option>
+                                            <option value="children">Children</option>
+                                            <option value="Never_worked">Never_worked</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="predict-residence">Residence</label>
+                                        <select id="predict-residence" name="residence_type" required>
+                                            <option value="Urban">Urban</option>
+                                            <option value="Rural">Rural</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="predict-smoking">Smoking</label>
+                                        <select id="predict-smoking" name="smoking_status" required>
+                                            <option value="formerly smoked">Formerly Smoked</option>
+                                            <option value="never smoked">Never Smoked</option>
+                                            <option value="smokes">Smokes</option>
+                                            <option value="Unknown">Unknown</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="predict-ever-married">Ever Married</label>
+                                        <select id="predict-ever-married" name="ever_married" required>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn-primary full-width" style="margin-top: 24px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="feather feather-cpu">
+                                        <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                                        <rect x="9" y="9" width="6" height="6"></rect>
+                                        <line x1="9" y1="1" x2="9" y2="4"></line>
+                                        <line x1="15" y1="1" x2="15" y2="4"></line>
+                                        <line x1="9" y1="20" x2="9" y2="23"></line>
+                                        <line x1="15" y1="20" x2="15" y2="23"></line>
+                                        <line x1="20" y1="9" x2="23" y2="9"></line>
+                                        <line x1="20" y1="14" x2="23" y2="14"></line>
+                                        <line x1="1" y1="9" x2="4" y2="9"></line>
+                                        <line x1="1" y1="14" x2="4" y2="14"></line>
+                                    </svg>
+                                    Run Prediction
+                                </button>
+
+                                <div class="backend-hint">
+                                    <strong>Backend Integration:</strong> This will send a POST request to
+                                    <code>/predict</code> endpoint on your Flask server with all the above parameters.
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Right Column: Result Display -->
+                        <div class="card predict-result-card">
+                            <div class="card-header-simple">
+                                <h3>Prediction Result</h3>
+                                <p class="card-subtitle-text">AI-generated stroke risk assessment</p>
+                            </div>
+
+                            <div id="manual-prediction-output" class="result-placeholder">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"
+                                    stroke-linejoin="round" class="feather feather-cpu">
+                                    <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                                    <rect x="9" y="9" width="6" height="6"></rect>
+                                    <line x1="9" y1="1" x2="9" y2="4"></line>
+                                    <line x1="15" y1="1" x2="15" y2="4"></line>
+                                    <line x1="9" y1="20" x2="9" y2="23"></line>
+                                    <line x1="15" y1="20" x2="15" y2="23"></line>
+                                    <line x1="20" y1="9" x2="23" y2="9"></line>
+                                    <line x1="20" y1="14" x2="23" y2="14"></line>
+                                    <line x1="1" y1="9" x2="4" y2="9"></line>
+                                    <line x1="1" y1="14" x2="4" y2="14"></line>
+                                </svg>
+                                <p>Click "Run Prediction" to analyze your stroke risk</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </main>
+    </div>
+    <!-- Edit Profile Modal -->
+    <div id="edit-profile-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Health Profile</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <p class="modal-subtitle">Update your health information for accurate stroke risk assessment</p>
+
+            <form id="edit-profile-form">
+                <div class="form-section-title">Personal Information</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-age">Age</label>
+                        <input type="number" id="edit-age" name="age" required min="1" max="120">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-gender">Gender</label>
+                        <select id="edit-gender" name="gender" required>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-section-title">Health Metrics</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-bmi">BMI (kg/m²)</label>
+                        <input type="number" id="edit-bmi" name="bmi" step="0.1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-glucose">Average Glucose Level (mg/dL)</label>
+                        <input type="number" id="edit-glucose" name="avg_glucose_level" step="0.1" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-hypertension">Hypertension</label>
+                        <select id="edit-hypertension" name="hypertension" required>
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-heart-disease">Heart Disease</label>
+                        <select id="edit-heart-disease" name="heart_disease" required>
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-section-title">Lifestyle Information</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-work-type">Work Type</label>
+                        <select id="edit-work-type" name="work_type" required>
+                            <option value="Private">Private</option>
+                            <option value="Self-employed">Self-employed</option>
+                            <option value="Govt_job">Govt_job</option>
+                            <option value="children">Children</option>
+                            <option value="Never_worked">Never_worked</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-residence-type">Residence Type</label>
+                        <select id="edit-residence-type" name="residence_type" required>
+                            <option value="Urban">Urban</option>
+                            <option value="Rural">Rural</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-smoking-status">Smoking Status</label>
+                        <select id="edit-smoking-status" name="smoking_status" required>
+                            <option value="formerly smoked">Formerly Smoked</option>
+                            <option value="never smoked">Never Smoked</option>
+                            <option value="smokes">Smokes</option>
+                            <option value="Unknown">Unknown</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-ever-married">Ever Married</label>
+                        <select id="edit-ever-married" name="ever_married" required>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary close-modal-btn">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        // New script for overlay blur effect
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItems = document.querySelectorAll('.sidebar-nav .nav-item');
+            const overlay = document.querySelector('.overlay-blur');
+
+            if (overlay && navItems.length) {
+                navItems.forEach(item => {
+                    item.addEventListener('click', () => {
+                        overlay.classList.add('active');
+                        // Hide it after a delay to simulate loading
+                        setTimeout(() => {
+                            overlay.classList.remove('active');
+                        }, 800);
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
+```
