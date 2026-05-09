@@ -90,6 +90,6 @@ To put the project online for public access.
 *   **Sensor (ESP32):** Hardware code (Arduino) needs to be flashed separately. 
 
 ---
-**Author:** Tran Dinh Quang
-**Contact:** trandinhquang011@gmail.com
+**Author:** Tang Thanh Tung
+**Contact:** tangtung17072004@gmail.com
 # stroke_detection
